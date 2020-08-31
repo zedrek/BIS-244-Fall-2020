@@ -93,4 +93,6 @@ p + geom_point() +
   geom_smooth(mapping = aes(color = continent, fill = continent)) + 
   scale_x_log10(labels = scales::dollar)
 
+  # That's all
+
 
