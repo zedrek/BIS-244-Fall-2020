@@ -76,7 +76,6 @@ ggplot(data = mpg, aes(x = displ, y = hwy))
 url <- "https://cdn.rawgit.com/kjhealy/viz-organdata/master/organdonation.csv"
  
 organs <- read.csv(file = url)
-organs <- readcsv(file = url)
 
 organs <- read_csv(file = "dataviz_course_notes/data/organdonation.csv")
 
