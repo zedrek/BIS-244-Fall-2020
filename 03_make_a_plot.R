@@ -38,7 +38,6 @@ p + geom_smooth()
 p + geom_point() + geom_smooth() 
 
 
-
 # Fitting a linear regression to data
 
 p + geom_point() + geom_smooth(method = "lm") 
