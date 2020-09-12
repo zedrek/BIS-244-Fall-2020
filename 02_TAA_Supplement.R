@@ -43,7 +43,7 @@ SNOHOMISH$incr_cases <- 1
 
 View(SNOHOMISH)
 
-# Calculate values for other than first row
+# Calculate values for other than first row using FOR loop
 
 for (i in 2:n) {
   SNOHOMISH$incr_cases[i] <- (SNOHOMISH$cases[i]-SNOHOMISH$cases[i-1]) 
@@ -63,10 +63,10 @@ p + geom_point() +
        subtitle = "Data points are incremental new confirmed cases",
        caption = "Source: NY Times")
 
-# Let's replace 0 values with NA
+# Let's replace 0 values with NA using IF..ELSE statement
 
 for (i in 1:n) {
-  if(SNOHOMISH$incr_cases[i]==0) {
+  if (SNOHOMISH$incr_cases[i]==0) {
     SNOHOMISH$incr_cases[i] <- NA
   } else {}
 }
@@ -210,16 +210,12 @@ for (i in 1:n) {
 ### The single line below is the main point of the loop, calculating trip_length  
   DF$trip_length[i] <- difftime(tpep_dropoff_datetime[i],tpep_pickup_datetime[i],
                                 units="mins")
-  
-  
 }
 LOOP_TIME <- (proc.time() - ptm)
 LOOP_TIME
 
 # Let's see what we got
 View(DF)
-
-# Note that our math sometimes resulted in minutes, sometimes hours...
 
 cat("If we had processed the whole file, would have taken",as.numeric(LOOP_TIME[3], units = "hours"),"hours.")
 
@@ -232,7 +228,6 @@ MUTATE_TIME <- (proc.time() - ptm)
 MUTATE_TIME
 
 View(DF)
-
 
 cat("Took",as.numeric(MUTATE_TIME[3]), units = "seconds")
 
