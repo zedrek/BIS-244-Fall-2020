@@ -1,53 +1,88 @@
-## ----setup, include=FALSE-------------------------------------------
-knitr::opts_chunk$set(echo = TRUE)
+## ----setup=FALSE-------------------------------------------
 
 library(gapminder)
-library(here)
 library(tidyverse)
 library(socviz)
 
 
-## ----04-show-the-right-numbers-1------------------------------------
+## 4.2 Grouped Data and the "Group" Aesthetic
+
+# Reminder of what gapminder looks like
+view(gapminder)
+
+# Brief reminder of what we looked at in chapter 3
+
+p <- ggplot(data = gapminder,
+            mapping = aes(x = gdpPercap,
+                          y = lifeExp))
+p
+
+# We plotted a scatterplot of y against x
+p + geom_point() 
+
+# Then we added a smoothed line of y against x
+
+p + geom_smooth()
+
+# Then we combined both the scatterplot and the smoother line
+
+p + geom_point() + geom_smooth() 
+
+# In section 4.2, let's try the same thing, but with different variables
 
 
-
-## ----group_1--------------------------------------------------------
 p <- ggplot(data = gapminder,
             mapping = aes(x = year,
                           y = gdpPercap))
 p + geom_line()       
 
+# To see what's going on, take a look at structure of data
 
-## ----group_2--------------------------------------------------------
+str(gapminder)
+
+# We are asking it to plot a Factor variable on a continuous axis
+
+# Let's plot continuous variable against continuous variable, but grouped by Factors
+
 p <- ggplot(data = gapminder,
             mapping = aes(x = year,
                           y = gdpPercap))
 p + geom_line(mapping = 
                     aes(group = country))       
 
-
-## ----facet_1--------------------------------------------------------
+## 4.3 Facet to Make Small Multiples
 p <- ggplot(data = gapminder,
             mapping = aes(x = year,
                           y = gdpPercap))
 
-p + geom_line(mapping =  
-              aes(group = country)) + 
-facet_wrap(~ continent)      
+p + geom_line(mapping = aes(group = country)) + 
+    facet_wrap(~ continent)      
 
+# Note how the layout of the picture allows facets to share axes titles
 
-## ----facet_polished, fig.height = 5, fig.width = 12, layout = 'l-page'----
-p + geom_line(color="gray70",
-              mapping=aes(group = country)) +
-    geom_smooth(size = 1.1,
-                method = "loess",
-                se = FALSE) +
+# Also note that "~ continent" is a powerful statement. For now, DON'T used it
+# on continuous variables, and be careful about using it Factors with a lot of levels.
+
+p + geom_line(mapping = aes(group = country)) + 
+  facet_wrap(~ country)      
+
+# FIne-tuning facet_wrap() to specify 5 columns
+
+p + geom_line(mapping = aes(group = country)) + 
+  facet_wrap(~ continent, ncol = 5)      
+
+# Let's add a smoother line, set color for each country to grey, 
+# use log10 y-axis, and add labels
+
+p + geom_line(color="gray70", mapping=aes(group = country)) +
+    geom_smooth(size = 1.1, method = "loess", se = FALSE) +
     scale_y_log10(labels=scales::dollar) +
     facet_wrap(~ continent, ncol = 5) +
     labs(x = "Year",
          y = "log GDP per capita",
          title = "GDP per capita on Five Continents")      
 
+# Why did we specify "se = FALSE"?
 
 ## ----facet_grid-----------------------------------------------------
 
