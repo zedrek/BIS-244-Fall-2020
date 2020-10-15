@@ -3,7 +3,12 @@ library(tidyverse)
 
 # Read in us-counties.csv
 
+tmp <- getwd()
+setwd("./covid-19-data/")
+
 us_counties <- read_csv("us-counties.csv")
+
+setwd(tmp)
 
 # Filter out non-PA counties
 
