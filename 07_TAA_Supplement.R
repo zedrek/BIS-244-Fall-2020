@@ -95,7 +95,7 @@ p + geom_col(position = "dodge") +
 
 View(organdata)
 
-@ ANother way of getting a quick view of the first 6 columns
+# Another way of getting a quick view of the first 6 columns
 
 organdata %>% select(1:6) %>% sample_n(size = 10)      
 
