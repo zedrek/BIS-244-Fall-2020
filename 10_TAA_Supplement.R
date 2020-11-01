@@ -1,15 +1,56 @@
-## Intended to accompany BIS 244 Video Set 09
+## Intended to accompany BIS 244 Video Set 10
 
 library(gapminder)
 library(tidyverse)
 library(ggrepel)
 library(socviz)
 
+# Get us back up through section 8.2 material
+party_colors <- c("#2E74C0", "#CB454A")
+p0 <- ggplot(data = subset(county_data,
+                           flipped == "No"),
+             mapping = aes(x = pop,
+                           y = black/100))
+
+p1 <- p0 + geom_point(alpha = 0.15, color = "gray50") +
+  scale_x_log10(labels=scales::comma) 
+p2 <- p1 + geom_point(data = subset(county_data,
+                                    flipped == "Yes"),
+                      mapping = aes(x = pop, y = black/100,
+                                    color = partywinner16)) +
+  scale_color_manual(values = party_colors)
+p3 <- p2 + scale_y_continuous(labels=scales::percent) +
+  labs(color = "County flipped to ... ",
+       x = "County Population (log scale)",
+       y = "Percent Black Population",
+       title = "Flipped counties, 2016",
+       caption = "Counties in gray did not flip.")
+p4 <- p3 + geom_text_repel(data =
+                             subset(county_data,
+                                    flipped == "Yes" &
+                                      black  > 25),
+                           mapping =
+                             aes(x = pop,
+                                 y = black/100,
+                                 label = state), size = 2)
+
+p4 + theme_minimal() + theme(legend.position="top")
 
 ## 8.3 Change the Appearance of Plots with Themes
 
+theme_set(theme_classic())
+p4 + theme(legend.position="top")
+
+theme_set(theme_grey())
+p4 + theme(legend.position="top")
+
+theme_set(theme_dark())
+p4 + theme(legend.position="top")
+
 if (!require("ggthemes")) install.packages("ggthemes")
 library(ggthemes)
+
+ls(pattern = '^theme_', env = as.environment('package:ggthemes'))
 
 theme_set(theme_economist())
 p4 + theme(legend.position="top")
@@ -21,11 +62,12 @@ p4 + theme(plot.title = element_text(size = rel(0.6)),
            plot.caption = element_text(size = rel(0.35)),
            legend.position = "top")
 
+theme_set(theme_excel_new())
+p4 + theme(legend.position="top")
+
 theme_set(theme_minimal())
 
-
-
-## ----ch-08-theme-control, fig.cap='Controlling various theme elements directly.', fig.width=5, fig.height=5, out.width = "50%", warning=FALSE, fig.show = "hold"----
+# 
 
 p4 + theme(legend.position = "top")
 
@@ -41,9 +83,7 @@ p4 + theme(legend.position = "top",
                                       color="purple"))
 
 
-
-
-## ----gss-custom-01, fig.cap = "A customized small multiple.", fig.height = 10, fig.width = 4----
+## 8.4 Use Theme Elements in a Substantive Way
 
 yrs <- c(seq(1972, 1988, 4), 1993, seq(1996, 2016, 4))
 
@@ -85,10 +125,7 @@ p1 + theme_minimal() +
          y = NULL,
          title = "Age Distribution of\nGSS Respondents")
 
-
-
-
-## ----ridgeplot, fig.cap = "A ridgeplot version of the age distribution plot.", fig.height = 12, fig.width = 3.1----
+# Same graph, but using ggridges package to allow facets to overlap vertically
 
 library(ggridges)
 
@@ -105,16 +142,13 @@ p + geom_density_ridges(alpha = 0.6, fill = "lightblue", scale = 1.5) +
     theme(title = element_text(size = 16, face = "bold"))
 
 
-## ----08-refine-plots-13---------------------------------------------
+## Case Studies: Two y-axes
 head(fredts)
 
 fredts_m <- fredts %>% select(date, sp500_i, monbase_i) %>%
     gather(key = series, value = score, sp500_i:monbase_i)
 
 head(fredts_m)
-
-
-## ----08-refine-plots-14---------------------------------------------
 
 p <- ggplot(data = fredts_m,
             mapping = aes(x = date, y = score,
@@ -132,18 +166,14 @@ p2 <- p + geom_line() +
     labs(x = "Date",
          y = "Difference")
 
-
-## ----fred5, fig.cap="Indexed series with a running difference below, using two separate plots.", fig.width = 8----
-
 cowplot::plot_grid(p1, p2, nrow = 2, rel_heights = c(0.75, 0.25), align = "v")
 
 
 
-## ----08-refine-plots-15---------------------------------------------
+## Case Studies: Redrawing a bad slide
+
 head(yahoo)
 
-
-## ----yahoo-02, fig.cap="Redrawing as a connected scatterplot.", fig.width = 5, fig.height = 5----
 p <- ggplot(data = yahoo,
             mapping = aes(x = Employees, y = Revenue))
 p + geom_path(color = "gray80") +
@@ -156,9 +186,6 @@ p + geom_path(color = "gray80") +
     scale_y_continuous(labels = scales::dollar) +
     scale_x_continuous(labels = scales::comma)
 
-
-
-## ----yahoo-03, fig.cap="Plotting the ratio of revenue to employees against time.", fig.width = 6, fig.height = 4----
 
 p <- ggplot(data = yahoo,
             mapping = aes(x = Year, y = Revenue/Employees))
@@ -173,11 +200,9 @@ p + geom_vline(xintercept = 2012) +
 
 
 
-## ----08-refine-plots-16---------------------------------------------
+## Case Studies: Student debt
+
 head(studebt)
-
-
-## ----studentpie-02, fig.cap="Faceting the pie charts.", fig.width = 6, fig.height = 4----
 
 p_xlab <- "Amount Owed, in thousands of Dollars"
 p_title <- "Outstanding Student Loans"
@@ -202,7 +227,6 @@ p + geom_bar(stat = "identity") +
     coord_flip()
 
 
-## ----studentpie-03, fig.cap="Debt distributions as horizontally segmented bars.", fig.width = 8, fig.height = 3----
 library(viridis)
 
 p <- ggplot(studebt, aes(y = pct/100, x = type, fill = Debtrc))
@@ -227,11 +251,6 @@ p + geom_bar(stat = "identity", color = "gray80") +
   coord_flip()
 
 
-
-
-## ----08-refine-plots-2, fig.height=12, fig.width=14, out.width="100%"----
-
-pdf(file = "~/Desktop/asa_sections.pdf", height = 8, width = 12)
 p0 <- ggplot(data = asasec,
              mapping = aes(x = Year, y = Members, label = Sname, group = Sname)) 
 p1 <- p0 + geom_line() 
@@ -242,6 +261,5 @@ p1 + facet_wrap( ~ reorder(Sname, -Members), ncol = 11) +
         strip.text = element_text(size = rel(0.65))) +
   labs(x = "")
 
-dev.off()
 
 
